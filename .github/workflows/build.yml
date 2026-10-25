@@ -1,11 +1,16 @@
 name: build
 
+# Runs on pull requests into main and on demand. Pushes to branches do not run it (a PR is the check), and
+# there is no weekly schedule: the Geyser drift probe is a manual run with geyser_drift set to true.
 on:
-  push:
   pull_request:
-  schedule:
-    # Weekly drift probe: rebuilds against the newest Geyser snapshot of the pinned line.
-    - cron: '20 6 * * 1'
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      geyser_drift:
+        description: 'Rebuild against the newest Geyser snapshot (drift probe)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -16,6 +21,7 @@ concurrency:
 
 env:
   GEYSER_VERSION: ${{ vars.GEYSER_VERSION || '2.11.2-SNAPSHOT' }}
+  GEYSER_DRIFT: ${{ inputs.geyser_drift == true }}
 
 jobs:
   build:
@@ -47,10 +53,9 @@ jobs:
       - name: Build and test against Geyser ${{ env.GEYSER_VERSION }}
         run: |
           set +e
-          # On the weekly run, -U makes Maven re-resolve the SNAPSHOT: that is the drift probe. Push and pull
-          # request runs keep Maven's default snapshot policy (at most one remote check a day).
+          # With geyser_drift, -U makes Maven re-resolve the SNAPSHOT. Otherwise Maven's default snapshot policy applies.
           UPDATE=""
-          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then UPDATE="-U"; fi
+          if [ "$GEYSER_DRIFT" = "true" ]; then UPDATE="-U"; fi
           ./mvnw -B -ntp $UPDATE \
               -Dgeyser.version="$GEYSER_VERSION" verify 2>&1 | tee mvn.log
           ec=${PIPESTATUS[0]}
