@@ -2,8 +2,7 @@
 
 ## Supported versions
 
-Only the latest release line receives fixes. At the time of writing that is the 1.x line; the `1.1.0` release
-will supersede it once published.
+Only the latest release line receives fixes. At the time of writing that is the 2.x line (Hauteur).
 
 ## Reporting a vulnerability
 
