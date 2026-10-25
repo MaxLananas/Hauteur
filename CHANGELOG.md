@@ -6,7 +6,10 @@ commands and jar name. The pinned Geyser build is listed in the README.
 
 ## [Unreleased]
 
-Changes since 1.0.0. Not yet released; the version in `pom.xml` is `1.1.0-SNAPSHOT`.
+## [2.0.0] - 2026-10-25
+
+Renamed from SkyWindow to Hauteur, with a new package, `groupId` and configuration location, so this is a
+major version. The earlier SkyWindow releases (1.1.1 to 1.3.0) are described on their GitHub release pages.
 
 ### Changed
 
